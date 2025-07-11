@@ -42,11 +42,17 @@ const deleteItem = (req, res) => {
 
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then(() => res.status(204).send())
-    .catch((e) => {
-      res
-        .status(500)
-        .send({ message: "Error from deleteItem", error: e.message });
+    .then((item) => {
+      res.status(200).send({ data: item });
+    })
+    .catch((err) => {
+      if (err.name === "CastError") {
+        return res.status(400).send({ message: "Invalid item ID format" });
+      }
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(404).send({ message: "Item not found" });
+      }
+      return res.status(500).send({ message: "Error from deleteItem" });
     });
 };
 
@@ -63,9 +69,11 @@ const likeItem = (req, res) => {
       return res.send(item);
     })
     .catch((err) => {
-      res
-        .status(500)
-        .send({ message: "Failed to like item", error: err.message });
+      if (err.name === "CastError") {
+        return res.status(400).send({ message: "Invalid item ID format" });
+      }
+      console.error(err);
+      return res.status(500).send({ message: "Failed to like item" });
     });
 };
 
@@ -82,9 +90,11 @@ const dislikeItem = (req, res) => {
       return res.send(item);
     })
     .catch((err) => {
-      res
-        .status(500)
-        .send({ message: "Failed to dislike item", error: err.message });
+      if (err.name === "CastError") {
+        return res.status(400).send({ message: "Invalid item ID format" });
+      }
+      console.error(err);
+      return res.status(500).send({ message: "Failed to dislike item" });
     });
 };
 
