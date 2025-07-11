@@ -5,11 +5,15 @@ const createItem = (req, res) => {
 
   ClothingItem.create({ name, weather, imageUrl })
     .then((item) => {
-      console.log(item);
-      res.send({ data: item });
+      res.status(201).send({ data: item });
     })
     .catch((err) => {
-      res.status(500).send({ message: err.message });
+      if (err.name === "ValidationError") {
+        return res.status(400).send({ message: err.message });
+      }
+      return res
+        .status(500)
+        .send({ message: "Failed to create item", error: err.message });
     });
 };
 
