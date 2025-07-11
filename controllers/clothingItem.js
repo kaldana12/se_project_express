@@ -60,7 +60,7 @@ const likeItem = (req, res) => {
       if (!item) {
         return res.status(404).send({ message: "Item not found" });
       }
-      res.send(item);
+      return res.send(item);
     })
     .catch((err) => {
       res
@@ -79,7 +79,7 @@ const dislikeItem = (req, res) => {
       if (!item) {
         return res.status(404).send({ message: "Item not found" });
       }
-      res.send(item);
+      return res.send(item);
     })
     .catch((err) => {
       res
