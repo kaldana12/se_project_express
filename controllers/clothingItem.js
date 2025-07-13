@@ -1,43 +1,33 @@
 const ClothingItem = require("../models/clothingItem");
+const { STATUS_CODES, ERROR_MESSAGES } = require("../utils/constants");
 
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
+  const owner = req.user._id;
 
-  ClothingItem.create({ name, weather, imageUrl })
+  ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => {
-      res.status(201).send({ data: item });
+      res.status(STATUS_CODES.CREATED).send({ data: item });
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(400).send({ message: err.message });
+        return res
+          .status(STATUS_CODES.BAD_REQUEST)
+          .send({ message: ERROR_MESSAGES.INVALID_DATA });
       }
       return res
-        .status(500)
-        .send({ message: "Failed to create item", error: err.message });
+        .status(STATUS_CODES.SERVER_ERROR)
+        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
     });
 };
 
 const getItems = (req, res) => {
   ClothingItem.find({})
-    .then((items) => res.status(200).send(items))
-    .catch((e) => {
+    .then((items) => res.status(STATUS_CODES.OK).send(items))
+    .catch(() => {
       res
-        .status(500)
-        .send({ message: "Error from getItems", error: e.message });
-    });
-};
-
-const updateItem = (req, res) => {
-  const { itemId } = req.params;
-  const { imageUrl } = req.body;
-
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } }, { new: true })
-    .orFail()
-    .then((item) => res.status(200).send({ data: item }))
-    .catch((e) => {
-      res
-        .status(500)
-        .send({ message: "Error from updateItem", error: e.message });
+        .status(STATUS_CODES.SERVER_ERROR)
+        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
     });
 };
 
@@ -47,16 +37,22 @@ const deleteItem = (req, res) => {
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
     .then((item) => {
-      res.status(200).send({ data: item });
+      res.status(STATUS_CODES.OK).send({ data: item });
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        return res.status(400).send({ message: "Invalid item ID format" });
+        return res
+          .status(STATUS_CODES.BAD_REQUEST)
+          .send({ message: ERROR_MESSAGES.INVALID_ID });
       }
       if (err.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: "Item not found" });
+        return res
+          .status(STATUS_CODES.NOT_FOUND)
+          .send({ message: ERROR_MESSAGES.ITEM_NOT_FOUND });
       }
-      return res.status(500).send({ message: "Error from deleteItem" });
+      return res
+        .status(STATUS_CODES.SERVER_ERROR)
+        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
     });
 };
 
@@ -68,16 +64,21 @@ const likeItem = (req, res) => {
   )
     .then((item) => {
       if (!item) {
-        return res.status(404).send({ message: "Item not found" });
+        return res
+          .status(STATUS_CODES.NOT_FOUND)
+          .send({ message: ERROR_MESSAGES.ITEM_NOT_FOUND });
       }
-      return res.send(item);
+      return res.status(STATUS_CODES.OK).send(item);
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        return res.status(400).send({ message: "Invalid item ID format" });
+        return res
+          .status(STATUS_CODES.BAD_REQUEST)
+          .send({ message: ERROR_MESSAGES.INVALID_ID });
       }
-      console.error(err);
-      return res.status(500).send({ message: "Failed to like item" });
+      return res
+        .status(STATUS_CODES.SERVER_ERROR)
+        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
     });
 };
 
@@ -89,23 +90,27 @@ const dislikeItem = (req, res) => {
   )
     .then((item) => {
       if (!item) {
-        return res.status(404).send({ message: "Item not found" });
+        return res
+          .status(STATUS_CODES.NOT_FOUND)
+          .send({ message: ERROR_MESSAGES.ITEM_NOT_FOUND });
       }
-      return res.send(item);
+      return res.status(STATUS_CODES.OK).send(item);
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        return res.status(400).send({ message: "Invalid item ID format" });
+        return res
+          .status(STATUS_CODES.BAD_REQUEST)
+          .send({ message: ERROR_MESSAGES.INVALID_ID });
       }
-      console.error(err);
-      return res.status(500).send({ message: "Failed to dislike item" });
+      return res
+        .status(STATUS_CODES.SERVER_ERROR)
+        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
     });
 };
 
 module.exports = {
   createItem,
   getItems,
-  updateItem,
   deleteItem,
   likeItem,
   dislikeItem,
