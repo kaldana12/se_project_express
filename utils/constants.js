@@ -9,6 +9,7 @@ const STATUS_CODES = {
 const ERROR_MESSAGES = {
   INVALID_DATA: "Invalid data",
   ITEM_NOT_FOUND: "Item not found",
+  USER_NOT_FOUND: "User not found",
   INVALID_ID: "Invalid item ID format",
   SERVER_ERROR: "An error occurred on the server",
 };
