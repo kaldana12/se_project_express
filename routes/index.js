@@ -2,7 +2,7 @@ const router = require("express").Router();
 const userRouter = require("./users");
 const clothingItem = require("./clothingItem");
 
-const { STATUS_CODES, ERROR_MESSAGES } = require("../utils/constants");
+const { STATUS_CODES } = require("../utils/constants");
 
 router.use("/users", userRouter);
 router.use("/items", clothingItem);
