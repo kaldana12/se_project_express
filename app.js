@@ -15,6 +15,7 @@ mongoose
   .catch(console.error);
 
 // Middleware to parse JSON
+app.use(cors());
 app.use(express.json());
 
 app.use("/", mainRouter);
@@ -22,5 +23,3 @@ app.use("/", mainRouter);
 app.listen(PORT, () => {
   console.log(`listening on port ${PORT}`);
 });
-
-app.use(cors());
