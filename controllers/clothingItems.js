@@ -1,5 +1,5 @@
 const ClothingItem = require("../models/clothingItem");
-const { STATUS_CODES, ERROR_MESSAGES } = require("../utils/constants");
+const { STATUS_CODES, ERROR_MESSAGES } = require("../utils/errors");
 
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;

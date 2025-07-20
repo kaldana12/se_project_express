@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
-const { STATUS_CODES, ERROR_MESSAGES } = require("../utils/constants");
+
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
 const User = require("../models/user");
+const { STATUS_CODES, ERROR_MESSAGES } = require("../utils/errors");
 
 // GET /users
 const getUsers = (req, res) => {
@@ -114,7 +115,7 @@ const getCurrentUser = (req, res, next) => {
           .status(STATUS_CODES.NOT_FOUND)
           .send({ message: ERROR_MESSAGES.USER_NOT_FOUND });
       }
-      res.send(user);
+      return res.send(user);
     })
     .catch(next);
 };
@@ -137,7 +138,7 @@ const updateUserProfile = (req, res, next) => {
           .status(STATUS_CODES.NOT_FOUND)
           .send({ message: ERROR_MESSAGES.USER_NOT_FOUND });
       }
-      res.send(user);
+      return res.send(user);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
@@ -145,7 +146,7 @@ const updateUserProfile = (req, res, next) => {
           .status(STATUS_CODES.BAD_REQUEST)
           .send({ message: ERROR_MESSAGES.INVALID_DATA });
       }
-      next(err);
+      return next(err);
     });
 };
 

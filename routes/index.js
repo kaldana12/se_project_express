@@ -2,7 +2,7 @@ const router = require("express").Router();
 const userRouter = require("./users");
 const clothingItem = require("./clothingItems");
 const { login, createUser } = require("../controllers/users");
-const { STATUS_CODES } = require("../utils/constants");
+const { STATUS_CODES } = require("../utils/errors");
 const auth = require("../middlewares/auth");
 
 // Public routes
