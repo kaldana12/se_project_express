@@ -28,7 +28,7 @@ const createUsers = (req, res) => {
       .send({ message: ERROR_MESSAGES.INVALID_DATA });
   }
 
-  bcrypt
+  return bcrypt
     .hash(password, 10)
     .then((hashedPassword) =>
       User.create({ name, avatar, email, password: hashedPassword })
