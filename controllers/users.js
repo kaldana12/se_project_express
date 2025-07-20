@@ -1,9 +1,9 @@
-const User = require("../models/user");
+const mongoose = require("mongoose");
 const { STATUS_CODES, ERROR_MESSAGES } = require("../utils/constants");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
-const mongoose = require("mongoose");
+const User = require("../models/user");
 
 // GET /users
 const getUsers = (req, res) => {
@@ -11,7 +11,7 @@ const getUsers = (req, res) => {
     .then((users) => res.status(STATUS_CODES.OK).send(users))
     .catch((err) => {
       console.error(err);
-      res
+      return res
         .status(STATUS_CODES.SERVER_ERROR)
         .send({ message: ERROR_MESSAGES.SERVER_ERROR });
     });
@@ -41,11 +41,9 @@ const createUsers = (req, res) => {
       console.error(err);
 
       if (err.code === 11000) {
-        return res
-          .status(STATUS_CODES.CONFLICT)
-          .send({
-            message: ERROR_MESSAGES.EMAIL_EXISTS || "Email already exists",
-          });
+        return res.status(STATUS_CODES.CONFLICT).send({
+          message: ERROR_MESSAGES.EMAIL_EXISTS || "Email already exists",
+        });
       }
 
       if (err.name === "ValidationError") {
@@ -54,7 +52,7 @@ const createUsers = (req, res) => {
           .send({ message: ERROR_MESSAGES.INVALID_DATA });
       }
 
-      res
+      return res
         .status(STATUS_CODES.SERVER_ERROR)
         .send({ message: ERROR_MESSAGES.SERVER_ERROR });
     });
@@ -82,7 +80,7 @@ const getUser = (req, res) => {
           .send({ message: ERROR_MESSAGES.INVALID_ID });
       }
 
-      res
+      return res
         .status(STATUS_CODES.SERVER_ERROR)
         .send({ message: ERROR_MESSAGES.SERVER_ERROR });
     });
@@ -101,11 +99,9 @@ const login = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      res
-        .status(STATUS_CODES.UNAUTHORIZED)
-        .send({
-          message: ERROR_MESSAGES.AUTH_FAILED || "Invalid email or password",
-        });
+      return res.status(STATUS_CODES.UNAUTHORIZED).send({
+        message: ERROR_MESSAGES.AUTH_FAILED || "Invalid email or password",
+      });
     });
 };
 
