@@ -1,5 +1,3 @@
-const mongoose = require("mongoose");
-
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
@@ -162,7 +160,6 @@ const updateUserProfile = (req, res) => {
 };
 
 module.exports = {
-  getUsers,
   createUsers,
   getUser,
   login,
