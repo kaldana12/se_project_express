@@ -6,18 +6,6 @@ const { JWT_SECRET } = require("../utils/config");
 const User = require("../models/user");
 const { STATUS_CODES, ERROR_MESSAGES } = require("../utils/errors");
 
-// GET /users
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.status(STATUS_CODES.OK).send(users))
-    .catch((err) => {
-      console.error(err);
-      return res
-        .status(STATUS_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
-    });
-};
-
 // POST /signup
 const createUsers = (req, res) => {
   const { name, avatar, email, password } = req.body;
@@ -107,21 +95,34 @@ const login = (req, res) => {
 };
 
 // GET /users/me
-const getCurrentUser = (req, res, next) => {
-  User.findById(req.user._id)
-    .then((user) => {
-      if (!user) {
+const getCurrentUser = (req, res) => {
+  const userId = req.user._id;
+
+  User.findById(userId)
+    .orFail()
+    .then((user) => res.status(STATUS_CODES.OK).send(user))
+    .catch((err) => {
+      if (err.name === "CastError") {
+        return res
+          .status(STATUS_CODES.BAD_REQUEST)
+          .send({ message: ERROR_MESSAGES.INVALID_ID });
+      }
+
+      if (err.name === "DocumentNotFoundError") {
         return res
           .status(STATUS_CODES.NOT_FOUND)
           .send({ message: ERROR_MESSAGES.USER_NOT_FOUND });
       }
-      return res.send(user);
-    })
-    .catch(next);
+
+      console.error(err);
+      return res
+        .status(STATUS_CODES.SERVER_ERROR)
+        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+    });
 };
 
 // PATCH /users/me
-const updateUserProfile = (req, res, next) => {
+const updateUserProfile = (req, res) => {
   const { name, avatar } = req.body;
 
   User.findByIdAndUpdate(
@@ -141,12 +142,22 @@ const updateUserProfile = (req, res, next) => {
       return res.send(user);
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
+      if (err.name === "ValidationError") {
         return res
           .status(STATUS_CODES.BAD_REQUEST)
           .send({ message: ERROR_MESSAGES.INVALID_DATA });
       }
-      return next(err);
+
+      if (err.name === "CastError") {
+        return res
+          .status(STATUS_CODES.BAD_REQUEST)
+          .send({ message: ERROR_MESSAGES.INVALID_ID });
+      }
+
+      console.error(err);
+      return res
+        .status(STATUS_CODES.SERVER_ERROR)
+        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
     });
 };
 
