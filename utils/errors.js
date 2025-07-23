@@ -3,6 +3,7 @@ const STATUS_CODES = {
   CREATED: 201,
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
   NOT_FOUND: 404,
   CONFLICT: 409,
   SERVER_ERROR: 500,
@@ -17,6 +18,8 @@ const ERROR_MESSAGES = {
   EMAIL_EXISTS: "Email already exists",
   SERVER_ERROR: "An error occurred on the server",
   NO_PERMISSION: "You are not allowed to delete this item.",
+  AUTH_REQUIRED: "Authorization required",
+  TOKEN_INVALID: "Invalid or expired token",
 };
 
 module.exports = {

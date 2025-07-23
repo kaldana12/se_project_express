@@ -5,7 +5,7 @@ const User = require("../models/user");
 const { STATUS_CODES, ERROR_MESSAGES } = require("../utils/errors");
 
 // POST /signup
-const createUsers = (req, res) => {
+const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
   if (!email || !password) {
@@ -77,6 +77,12 @@ const getUser = (req, res) => {
 const login = (req, res) => {
   const { email, password } = req.body;
 
+  if (!email || !password) {
+    return res
+      .status(STATUS_CODES.BAD_REQUEST)
+      .send({ message: ERROR_MESSAGES.INVALID_DATA });
+  }
+
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
@@ -86,9 +92,16 @@ const login = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      return res.status(STATUS_CODES.UNAUTHORIZED).send({
-        message: ERROR_MESSAGES.AUTH_FAILED || "Invalid email or password",
-      });
+
+      if (err.message === "Incorrect email or password") {
+        return res
+          .status(STATUS_CODES.UNAUTHORIZED)
+          .send({ message: ERROR_MESSAGES.AUTH_FAILED });
+      }
+
+      return res
+        .status(STATUS_CODES.SERVER_ERROR)
+        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
     });
 };
 
@@ -160,7 +173,7 @@ const updateUserProfile = (req, res) => {
 };
 
 module.exports = {
-  createUsers,
+  createUser,
   getUser,
   login,
   getCurrentUser,
