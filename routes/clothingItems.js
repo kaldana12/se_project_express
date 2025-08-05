@@ -15,7 +15,7 @@ const {
 router.post("/", auth, createItem);
 
 // read
-router.get("/", getItems);
+router.get("/", auth, getItems);
 
 // delete
 router.delete("/:itemId", auth, deleteItem);

@@ -23,8 +23,11 @@ const createItem = (req, res) => {
 
 const getItems = (req, res) => {
   ClothingItem.find({})
-    .then((items) => res.status(STATUS_CODES.OK).send(items))
-    .catch(() => {
+    .populate("owner")
+    .then((items) => {
+      res.status(STATUS_CODES.OK).send(items);
+    })
+    .catch((err) => {
       res
         .status(STATUS_CODES.SERVER_ERROR)
         .send({ message: ERROR_MESSAGES.SERVER_ERROR });
