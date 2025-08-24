@@ -3,15 +3,19 @@ const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
 const User = require("../models/user");
 const { STATUS_CODES, ERROR_MESSAGES } = require("../utils/errors");
+const {
+  BadRequestError,
+  UnauthorizedError,
+  NotFoundError,
+  ConflictError,
+} = require("../utils/customErrors");
 
 // POST /signup
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
   if (!email || !password) {
-    return res
-      .status(STATUS_CODES.BAD_REQUEST)
-      .send({ message: ERROR_MESSAGES.INVALID_DATA });
+    throw new BadRequestError(ERROR_MESSAGES.INVALID_DATA);
   }
 
   return bcrypt
@@ -22,26 +26,20 @@ const createUser = (req, res) => {
     .then((user) => {
       const userWithoutPassword = user.toObject();
       delete userWithoutPassword.password;
-      res.status(STATUS_CODES.CREATED).send(userWithoutPassword);
+      res.status(201).send(userWithoutPassword);
     })
     .catch((err) => {
       console.error(err);
 
       if (err.code === 11000) {
-        return res.status(STATUS_CODES.CONFLICT).send({
-          message: ERROR_MESSAGES.EMAIL_EXISTS || "Email already exists",
-        });
+        return next(new ConflictError(ERROR_MESSAGES.EMAIL_EXISTS));
       }
 
       if (err.name === "ValidationError") {
-        return res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .send({ message: ERROR_MESSAGES.INVALID_DATA });
+        return next(new BadRequestError(ERROR_MESSAGES.INVALID_DATA));
       }
 
-      return res
-        .status(STATUS_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+      next(err);
     });
 };
 
@@ -56,20 +54,14 @@ const getUser = (req, res) => {
       console.error(err);
 
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(STATUS_CODES.NOT_FOUND)
-          .send({ message: ERROR_MESSAGES.USER_NOT_FOUND });
+        return next(new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND));
       }
 
       if (err.name === "CastError") {
-        return res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .send({ message: ERROR_MESSAGES.INVALID_ID });
+        return next(new BadRequestError(ERROR_MESSAGES.INVALID_ID));
       }
 
-      return res
-        .status(STATUS_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+      return next(new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND));
     });
 };
 
@@ -78,9 +70,7 @@ const login = (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res
-      .status(STATUS_CODES.BAD_REQUEST)
-      .send({ message: ERROR_MESSAGES.INVALID_DATA });
+    throw new BadRequestError(ERROR_MESSAGES.INVALID_DATA);
   }
 
   return User.findUserByCredentials(email, password)
@@ -94,9 +84,7 @@ const login = (req, res) => {
       console.error(err);
 
       if (err.message === "Incorrect email or password") {
-        return res
-          .status(STATUS_CODES.UNAUTHORIZED)
-          .send({ message: ERROR_MESSAGES.AUTH_FAILED });
+        return next(new UnauthorizedError(ERROR_MESSAGES.AUTH_FAILED));
       }
 
       return res
@@ -114,15 +102,11 @@ const getCurrentUser = (req, res) => {
     .then((user) => res.status(STATUS_CODES.OK).send(user))
     .catch((err) => {
       if (err.name === "CastError") {
-        return res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .send({ message: ERROR_MESSAGES.INVALID_ID });
+        return next(new BadRequestError(ERROR_MESSAGES.INVALID_ID));
       }
 
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(STATUS_CODES.NOT_FOUND)
-          .send({ message: ERROR_MESSAGES.USER_NOT_FOUND });
+        return next(new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND));
       }
 
       console.error(err);
@@ -146,23 +130,17 @@ const updateUserProfile = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        return res
-          .status(STATUS_CODES.NOT_FOUND)
-          .send({ message: ERROR_MESSAGES.USER_NOT_FOUND });
+        return next(new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND));
       }
       return res.send(user);
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .send({ message: ERROR_MESSAGES.INVALID_DATA });
+        throw new BadRequestError(ERROR_MESSAGES.INVALID_DATA);
       }
 
       if (err.name === "CastError") {
-        return res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .send({ message: ERROR_MESSAGES.INVALID_ID });
+        return next(new BadRequestError(ERROR_MESSAGES.INVALID_ID));
       }
 
       console.error(err);
