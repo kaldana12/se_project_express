@@ -26,5 +26,5 @@ module.exports = (req, res, next) => {
 
 const baseUrl =
   process.env.NODE_ENV === "production"
-    ? "https://https://www.wtwrkproject.jumpingcrab.com"
+    ? "https://api.wtwrkproject.jumpingcrab.com"
     : "http://localhost:3001";
