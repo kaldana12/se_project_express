@@ -23,8 +23,3 @@ module.exports = (req, res, next) => {
       .send({ message: ERROR_MESSAGES.TOKEN_INVALID });
   }
 };
-
-const baseUrl =
-  process.env.NODE_ENV === "production"
-    ? "https://api.wtwrkproject.jumpingcrab.com"
-    : "http://localhost:3001";
