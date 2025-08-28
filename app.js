@@ -18,18 +18,16 @@ mongoose
   })
   .catch(console.error);
 
-app.use(requestLogger);
-app.use(routes);
-
-app.use(errorLogger);
-
-app.use(errors());
-
 // Middleware to parse JSON
 app.use(cors());
 app.use(express.json());
 
+app.use(requestLogger);
+
 app.use("/", mainRouter);
+app.use(errorLogger);
+
+app.use(errors());
 
 app.use(errorHandler);
 
