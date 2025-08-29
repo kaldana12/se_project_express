@@ -35,3 +35,8 @@ nodemon — for local development
 Custom error handling — using centralized middleware and HTTP status constants
 
 REST API principles — for clean and scalable architecture
+
+### Links
+
+Domain: https://wtwrkproject.jumpingcrab.com/
+Frontend GitHub repo: https://github.com/kaldana12/se_project_react.git
