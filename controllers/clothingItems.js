@@ -1,73 +1,41 @@
 const ClothingItem = require("../models/clothingItem");
 const { STATUS_CODES, ERROR_MESSAGES } = require("../utils/errors");
 
-const createItem = (req, res) => {
+const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
   const owner = req.user._id;
 
   ClothingItem.create({ name, weather, imageUrl, owner })
-    .then((item) => {
-      res.status(STATUS_CODES.CREATED).send({ data: item });
-    })
-    .catch((err) => {
-      if (err.name === "ValidationError") {
-        return res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .send({ message: ERROR_MESSAGES.INVALID_DATA });
-      }
-      return res
-        .status(STATUS_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
-    });
+    .then((item) => res.status(STATUS_CODES.CREATED).send({ data: item }))
+    .catch((err) => next(err));
 };
 
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   ClothingItem.find({})
     .populate("owner")
-    .then((items) => {
-      res.status(STATUS_CODES.OK).send(items);
-    })
-    .catch((err) => {
-      res
-        .status(STATUS_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
-    });
+    .then((items) => res.status(STATUS_CODES.OK).send(items))
+    .catch(next);
 };
 
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
 
   ClothingItem.findById(itemId)
     .orFail()
     .then((item) => {
       if (item.owner.toString() !== req.user._id) {
-        return res
-          .status(STATUS_CODES.FORBIDDEN)
-          .send({ message: ERROR_MESSAGES.NO_PERMISSION });
+        const err = new Error(ERROR_MESSAGES.NO_PERMISSION);
+        err.statusCode = STATUS_CODES.FORBIDDEN;
+        throw err;
       }
-
       return item.deleteOne().then(() => {
         res.status(STATUS_CODES.OK).send({ message: "Item deleted" });
       });
     })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        return res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .send({ message: ERROR_MESSAGES.INVALID_ID });
-      }
-      if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(STATUS_CODES.NOT_FOUND)
-          .send({ message: ERROR_MESSAGES.ITEM_NOT_FOUND });
-      }
-      return res
-        .status(STATUS_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
-    });
+    .catch(next);
 };
 
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } },
@@ -75,25 +43,16 @@ const likeItem = (req, res) => {
   )
     .then((item) => {
       if (!item) {
-        return res
-          .status(STATUS_CODES.NOT_FOUND)
-          .send({ message: ERROR_MESSAGES.ITEM_NOT_FOUND });
+        const err = new Error(ERROR_MESSAGES.ITEM_NOT_FOUND);
+        err.statusCode = STATUS_CODES.NOT_FOUND;
+        throw err;
       }
-      return res.status(STATUS_CODES.OK).send(item);
+      res.status(STATUS_CODES.OK).send(item);
     })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        return res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .send({ message: ERROR_MESSAGES.INVALID_ID });
-      }
-      return res
-        .status(STATUS_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
-    });
+    .catch(next);
 };
 
-const dislikeItem = (req, res) => {
+const dislikeItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } },
@@ -101,22 +60,13 @@ const dislikeItem = (req, res) => {
   )
     .then((item) => {
       if (!item) {
-        return res
-          .status(STATUS_CODES.NOT_FOUND)
-          .send({ message: ERROR_MESSAGES.ITEM_NOT_FOUND });
+        const err = new Error(ERROR_MESSAGES.ITEM_NOT_FOUND);
+        err.statusCode = STATUS_CODES.NOT_FOUND;
+        throw err;
       }
-      return res.status(STATUS_CODES.OK).send(item);
+      res.status(STATUS_CODES.OK).send(item);
     })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        return res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .send({ message: ERROR_MESSAGES.INVALID_ID });
-      }
-      return res
-        .status(STATUS_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
-    });
+    .catch(next);
 };
 
 module.exports = {

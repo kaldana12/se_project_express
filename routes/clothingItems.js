@@ -1,7 +1,6 @@
 const router = require("express").Router();
 
 const auth = require("../middlewares/auth");
-
 const {
   createItem,
   getItems,
@@ -9,21 +8,25 @@ const {
   likeItem,
   dislikeItem,
 } = require("../controllers/clothingItems");
-// CRUD
 
-// Create
-router.post("/", auth, createItem);
+const {
+  validateCardBody,
+  validateItemId,
+} = require("../middlewares/validation");
 
-// read
+// Create item (requires body validation)
+router.post("/", auth, validateCardBody, createItem);
+
+// Get all items (no validation needed)
 router.get("/", getItems);
 
-// delete
-router.delete("/:itemId", auth, deleteItem);
+// Delete item by ID (validate :itemId param)
+router.delete("/:itemId", auth, validateItemId, deleteItem);
 
-// like
-router.put("/:itemId/likes", auth, likeItem);
+// Like item (validate :itemId param)
+router.put("/:itemId/likes", auth, validateItemId, likeItem);
 
-// dislike
-router.delete("/:itemId/likes", auth, dislikeItem);
+// Dislike item (validate :itemId param)
+router.delete("/:itemId/likes", auth, validateItemId, dislikeItem);
 
 module.exports = router;

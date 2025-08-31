@@ -8,14 +8,14 @@ const {
   UnauthorizedError,
   NotFoundError,
   ConflictError,
-} = require("../utils/customErrors");
+} = require("../utils/BadRequestError");
 
 // POST /signup
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   if (!email || !password) {
-    throw new BadRequestError(ERROR_MESSAGES.INVALID_DATA);
+    return next(new BadRequestError(ERROR_MESSAGES.INVALID_DATA));
   }
 
   return bcrypt
@@ -26,11 +26,9 @@ const createUser = (req, res) => {
     .then((user) => {
       const userWithoutPassword = user.toObject();
       delete userWithoutPassword.password;
-      res.status(201).send(userWithoutPassword);
+      res.status(STATUS_CODES.CREATED).send(userWithoutPassword);
     })
     .catch((err) => {
-      console.error(err);
-
       if (err.code === 11000) {
         return next(new ConflictError(ERROR_MESSAGES.EMAIL_EXISTS));
       }
@@ -39,20 +37,18 @@ const createUser = (req, res) => {
         return next(new BadRequestError(ERROR_MESSAGES.INVALID_DATA));
       }
 
-      next(err);
+      return next(err);
     });
 };
 
-// GET /users/:userId — (optional; now unused in current flow)
-const getUser = (req, res) => {
+// GET /users/:userId
+const getUser = (req, res, next) => {
   const { userId } = req.params;
 
-  User.findById(userId)
+  return User.findById(userId)
     .orFail()
     .then((user) => res.status(STATUS_CODES.OK).send(user))
     .catch((err) => {
-      console.error(err);
-
       if (err.name === "DocumentNotFoundError") {
         return next(new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND));
       }
@@ -61,16 +57,16 @@ const getUser = (req, res) => {
         return next(new BadRequestError(ERROR_MESSAGES.INVALID_ID));
       }
 
-      return next(new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND));
+      return next(err);
     });
 };
 
 // POST /signin
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    throw new BadRequestError(ERROR_MESSAGES.INVALID_DATA);
+    return next(new BadRequestError(ERROR_MESSAGES.INVALID_DATA));
   }
 
   return User.findUserByCredentials(email, password)
@@ -81,23 +77,19 @@ const login = (req, res) => {
       res.status(STATUS_CODES.OK).send({ token });
     })
     .catch((err) => {
-      console.error(err);
-
       if (err.message === "Incorrect email or password") {
         return next(new UnauthorizedError(ERROR_MESSAGES.AUTH_FAILED));
       }
 
-      return res
-        .status(STATUS_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+      return next(err);
     });
 };
 
 // GET /users/me
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const userId = req.user._id;
 
-  User.findById(userId)
+  return User.findById(userId)
     .orFail()
     .then((user) => res.status(STATUS_CODES.OK).send(user))
     .catch((err) => {
@@ -109,18 +101,15 @@ const getCurrentUser = (req, res) => {
         return next(new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND));
       }
 
-      console.error(err);
-      return res
-        .status(STATUS_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+      return next(err);
     });
 };
 
 // PATCH /users/me
-const updateUserProfile = (req, res) => {
+const updateUserProfile = (req, res, next) => {
   const { name, avatar } = req.body;
 
-  User.findByIdAndUpdate(
+  return User.findByIdAndUpdate(
     req.user._id,
     { name, avatar },
     {
@@ -132,21 +121,18 @@ const updateUserProfile = (req, res) => {
       if (!user) {
         return next(new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND));
       }
-      return res.send(user);
+      return res.status(STATUS_CODES.OK).send(user);
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        throw new BadRequestError(ERROR_MESSAGES.INVALID_DATA);
+        return next(new BadRequestError(ERROR_MESSAGES.INVALID_DATA));
       }
 
       if (err.name === "CastError") {
         return next(new BadRequestError(ERROR_MESSAGES.INVALID_ID));
       }
 
-      console.error(err);
-      return res
-        .status(STATUS_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+      return next(err);
     });
 };
 
