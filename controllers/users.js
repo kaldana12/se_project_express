@@ -8,7 +8,7 @@ const {
   UnauthorizedError,
   NotFoundError,
   ConflictError,
-} = require("../utils");
+} = require("../utils/errors");
 
 // POST /signup
 const createUser = (req, res, next) => {

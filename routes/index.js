@@ -7,7 +7,7 @@ const {
   validateUserCreation,
 } = require("../middlewares/validation");
 const auth = require("../middlewares/auth");
-const { NotFoundError } = require("../utils");
+const { NotFoundError } = require("../utils/errors");
 
 // Public routes
 router.post("/signin", validateLogin, login);
