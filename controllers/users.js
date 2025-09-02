@@ -59,7 +59,7 @@ const getUser = (req, res, next) => {
 
 // GET /users - Get all users
 const getUsers = (req, res, next) => {
-  return User.find({})
+  User.find({})
     .then((users) => res.status(STATUS_CODES.OK).send(users))
     .catch((err) => next(err));
 };
