@@ -38,5 +38,6 @@ REST API principles — for clean and scalable architecture
 
 ### Links
 
-Domain: https://wtwrkproject.jumpingcrab.com/
+Frontend: https://wtwrkproject.jumpingcrab.com
+Backend: https://api.wtwrkproject.jumpingcrab.com
 Frontend GitHub repo: https://github.com/kaldana12/se_project_react.git

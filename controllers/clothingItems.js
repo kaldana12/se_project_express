@@ -1,5 +1,6 @@
 const ClothingItem = require("../models/clothingItem");
 const { STATUS_CODES, ERROR_MESSAGES } = require("../utils/errors");
+const { NotFoundError, ForbiddenError } = require("../utils/index");
 
 const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
@@ -24,9 +25,7 @@ const deleteItem = (req, res, next) => {
     .orFail()
     .then((item) => {
       if (item.owner.toString() !== req.user._id) {
-        const err = new Error(ERROR_MESSAGES.NO_PERMISSION);
-        err.statusCode = STATUS_CODES.FORBIDDEN;
-        throw err;
+        throw new ForbiddenError(ERROR_MESSAGES.NO_PERMISSION);
       }
       return item.deleteOne().then(() => {
         res.status(STATUS_CODES.OK).send({ message: "Item deleted" });
@@ -43,9 +42,7 @@ const likeItem = (req, res, next) => {
   )
     .then((item) => {
       if (!item) {
-        const err = new Error(ERROR_MESSAGES.ITEM_NOT_FOUND);
-        err.statusCode = STATUS_CODES.NOT_FOUND;
-        throw err;
+        throw new NotFoundError(ERROR_MESSAGES.ITEM_NOT_FOUND);
       }
       res.status(STATUS_CODES.OK).send(item);
     })
@@ -60,9 +57,7 @@ const dislikeItem = (req, res, next) => {
   )
     .then((item) => {
       if (!item) {
-        const err = new Error(ERROR_MESSAGES.ITEM_NOT_FOUND);
-        err.statusCode = STATUS_CODES.NOT_FOUND;
-        throw err;
+        throw new NotFoundError(ERROR_MESSAGES.ITEM_NOT_FOUND);
       }
       res.status(STATUS_CODES.OK).send(item);
     })

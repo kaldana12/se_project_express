@@ -17,7 +17,17 @@ mongoose
   .catch(console.error);
 
 // Middleware to parse JSON
-app.use(cors());
+const allowedOrigins = [
+  "https://wtwrkproject.jumpingcrab.com",
+  "http://localhost:3000",
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.use(requestLogger);
