@@ -3,6 +3,11 @@ const { STATUS_CODES, ERROR_MESSAGES } = require("../utils/errors");
 module.exports = (err, req, res, next) => {
   const { statusCode = 500, message } = err;
 
+  // Celebrate validation error
+  if (err.joi) {
+    return res.status(STATUS_CODES.BAD_REQUEST).send({ message: err.joi.message });
+  }
+
   if (err.name === "ValidationError") {
     return res
       .status(STATUS_CODES.BAD_REQUEST)

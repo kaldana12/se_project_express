@@ -43,7 +43,6 @@ app.use("/", mainRouter);
 app.use(errorLogger);
 
 app.use(errors());
-
 app.use(errorHandler);
 
 app.get("/crash-test", () => {
