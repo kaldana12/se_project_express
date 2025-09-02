@@ -14,10 +14,6 @@ const {
 const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
-  if (!email || !password) {
-    return next(new BadRequestError(ERROR_MESSAGES.INVALID_DATA));
-  }
-
   return bcrypt
     .hash(password, 10)
     .then((hashedPassword) =>
@@ -64,10 +60,6 @@ const getUser = (req, res, next) => {
 // POST /signin
 const login = (req, res, next) => {
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    return next(new BadRequestError(ERROR_MESSAGES.INVALID_DATA));
-  }
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
