@@ -9,7 +9,7 @@ const validateURL = (value, helpers) => {
 };
 
 module.exports.validateCardBody = celebrate({
-  body: Joi.object().keys({
+  [Segments.BODY]: Joi.object().keys({
     name: Joi.string().required().min(2).max(30).messages({
       "string.min": 'The minimum length of the "name" field is 2',
       "string.max": 'The maximum length of the "name" field is 30',
@@ -69,7 +69,7 @@ module.exports.validateItemId = celebrate({
 });
 
 module.exports.validateUserUpdate = celebrate({
-  body: Joi.object().keys({
+  [Segments.BODY]: Joi.object().keys({
     name: Joi.string().min(2).max(30).required().messages({
       "string.min": 'The minimum length of the "name" field is 2',
       "string.max": 'The maximum length of the "name" field is 30',

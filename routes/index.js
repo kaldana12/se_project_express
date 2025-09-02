@@ -15,6 +15,9 @@ router.post("/signup", validateUserCreation, createUser);
 router.post("/users", validateUserCreation, createUser);
 router.use("/items", clothingItem);
 
+router.get("/users", getUsers);
+router.get("/users/:userId", validateId, getUser);
+
 router.use(auth);
 
 // Protected routes

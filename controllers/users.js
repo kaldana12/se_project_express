@@ -57,6 +57,13 @@ const getUser = (req, res, next) => {
     });
 };
 
+// GET /users - Get all users
+const getUsers = (req, res, next) => {
+  return User.find({})
+    .then((users) => res.status(STATUS_CODES.OK).send(users))
+    .catch((err) => next(err));
+};
+
 // POST /signin
 const login = (req, res, next) => {
   const { email, password } = req.body;
@@ -131,6 +138,7 @@ const updateUserProfile = (req, res, next) => {
 module.exports = {
   createUser,
   getUser,
+  getUsers,
   login,
   getCurrentUser,
   updateUserProfile,
