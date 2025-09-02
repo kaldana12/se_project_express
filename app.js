@@ -32,6 +32,13 @@ app.use(express.json());
 
 app.use(requestLogger);
 
+app.use((req, res, next) => {
+  req.user = {
+    _id: "68909aef9ab264f73f085e87",
+  };
+  next();
+});
+
 app.use("/", mainRouter);
 app.use(errorLogger);
 
