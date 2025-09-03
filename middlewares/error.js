@@ -1,5 +1,3 @@
-// middlewares/errorHandler.js (or wherever your error middleware is)
-
 const { STATUS_CODES, ERROR_MESSAGES } = require("../utils/errors");
 const {
   BadRequestError,
@@ -7,19 +5,17 @@ const {
   UnauthorizedError,
   NotFoundError,
   ForbiddenError,
-} = require("../utils/errors"); // Assumes these are exported from index.js
+} = require("../utils/errors");
 
 module.exports = (err, req, res, next) => {
-  const { statusCode = STATUS_CODES.SERVER_ERROR, message } = err;
-
-  // 🎯 Celebrate/Joi validation errors
+  // Celebrate/Joi validation error
   if (err.joi) {
     return res
       .status(STATUS_CODES.BAD_REQUEST)
       .send({ message: err.joi.message });
   }
 
-  // 🎯 Custom application errors
+  // Handle custom errors
   if (
     err instanceof BadRequestError ||
     err instanceof ConflictError ||
@@ -27,36 +23,36 @@ module.exports = (err, req, res, next) => {
     err instanceof NotFoundError ||
     err instanceof ForbiddenError
   ) {
-    return res.status(err.statusCode).send({ message });
+    return res.status(err.statusCode).send({ message: err.message });
   }
 
-  // 🎯 Mongoose validation error (e.g., schema validation)
+  // Mongoose ValidationError
   if (err.name === "ValidationError") {
     return res
       .status(STATUS_CODES.BAD_REQUEST)
       .send({ message: ERROR_MESSAGES.INVALID_DATA });
   }
 
-  // 🎯 Mongoose invalid ObjectId format
+  // Mongoose CastError (invalid ObjectId)
   if (err.name === "CastError") {
     return res
       .status(STATUS_CODES.BAD_REQUEST)
       .send({ message: ERROR_MESSAGES.INVALID_ID });
   }
 
-  // 🎯 Mongoose document not found
+  // Mongoose DocumentNotFoundError
   if (err.name === "DocumentNotFoundError") {
     return res
       .status(STATUS_CODES.NOT_FOUND)
       .send({ message: ERROR_MESSAGES.ITEM_NOT_FOUND });
   }
 
-  // 🎯 Generic known errors with status code
+  // Catch other known errors with a status code
   if (err.statusCode && err instanceof Error) {
-    return res.status(err.statusCode).send({ message });
+    return res.status(err.statusCode).send({ message: err.message });
   }
 
-  // ❌ Fallback for unexpected or uncaught server errors
+  // Fallback for unhandled errors
   return res
     .status(STATUS_CODES.SERVER_ERROR)
     .send({ message: ERROR_MESSAGES.SERVER_ERROR });
