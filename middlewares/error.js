@@ -1,15 +1,9 @@
 const { STATUS_CODES, ERROR_MESSAGES } = require("../utils/errors");
-const {
-  BadRequestError,
-  ConflictError,
-  UnauthorizedError,
-  NotFoundError,
-  ForbiddenError,
-} = require("../utils/errors");
 
 module.exports = (err, req, res, next) => {
-  const { statusCode = STATUS_CODES.SERVER_ERROR, message } = err;
+  const { statusCode = 500, message } = err;
 
+  // Celebrate validation error
   if (err.joi) {
     return res
       .status(STATUS_CODES.BAD_REQUEST)
@@ -17,16 +11,14 @@ module.exports = (err, req, res, next) => {
   }
 
   if (
-    err instanceof BadRequestError ||
-    err instanceof ConflictError ||
-    err instanceof UnauthorizedError ||
-    err instanceof NotFoundError ||
-    err instanceof ForbiddenError
+    err instanceof require("./customErrors/BadRequestError") ||
+    err instanceof require("./customErrors/ConflictError") ||
+    err instanceof require("./customErrors/UnauthorizedError") ||
+    err instanceof require("./customErrors/NotFoundError")
   ) {
-    return res.status(err.statusCode).send({ message });
+    return res.status(statusCode).send({ message });
   }
 
-  // 🎯 Mongoose validation error (e.g., schema validation)
   if (err.name === "ValidationError") {
     return res
       .status(STATUS_CODES.BAD_REQUEST)
@@ -49,7 +41,7 @@ module.exports = (err, req, res, next) => {
     return res.status(err.statusCode).send({ message });
   }
 
-  return res
-    .status(STATUS_CODES.SERVER_ERROR)
-    .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+  return res.status(statusCode).send({
+    message: statusCode === 500 ? ERROR_MESSAGES.SERVER_ERROR : message,
+  });
 };
