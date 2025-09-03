@@ -5,7 +5,9 @@ module.exports = (err, req, res, next) => {
 
   // Celebrate validation error
   if (err.joi) {
-    return res.status(STATUS_CODES.BAD_REQUEST).send({ message: err.joi.message });
+    return res
+      .status(STATUS_CODES.BAD_REQUEST)
+      .send({ message: err.joi.message });
   }
 
   if (err.name === "ValidationError") {
@@ -24,6 +26,10 @@ module.exports = (err, req, res, next) => {
     return res
       .status(STATUS_CODES.NOT_FOUND)
       .send({ message: ERROR_MESSAGES.ITEM_NOT_FOUND });
+  }
+
+  if (err.statusCode && err instanceof Error) {
+    return res.status(err.statusCode).send({ message });
   }
 
   return res.status(statusCode).send({
