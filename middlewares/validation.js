@@ -62,12 +62,6 @@ module.exports.validateId = celebrate({
   }),
 });
 
-module.exports.validateItemId = celebrate({
-  params: Joi.object().keys({
-    id: Joi.string().length(24).hex().required(),
-  }),
-});
-
 module.exports.validateUserUpdate = celebrate({
   [Segments.BODY]: Joi.object().keys({
     name: Joi.string().min(2).max(30).required().messages({

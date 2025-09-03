@@ -11,7 +11,7 @@ const { NotFoundError } = require("../utils/errors/NotFoundError");
 
 // Public routes
 router.post("/signin", validateLogin, login);
-router.post("/signup", validateUserCreation, createUser);
+router.post("/users", validateUserCreation, createUser);
 router.use("/items", clothingItem);
 
 router.use(auth);
