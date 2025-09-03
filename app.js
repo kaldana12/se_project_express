@@ -13,8 +13,12 @@ const { PORT = 3001 } = process.env;
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
-  .then(() => {})
-  .catch(console.error);
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((error) => {
+    console.error("MongoDB connection error:", error);
+  });
 
 // Middleware to parse JSON
 const allowedOrigins = [
@@ -52,4 +56,6 @@ app.get("/crash-test", () => {
 });
 
 // start server
-app.listen(PORT, () => {});
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
