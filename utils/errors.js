@@ -22,11 +22,11 @@ const ERROR_MESSAGES = {
   TOKEN_INVALID: "Invalid or expired token",
 };
 
-const BadRequestError = require("./customErrors/BadRequestError");
-const ConflictError = require("./customErrors/ConflictError");
-const UnauthorizedError = require("./customErrors/UnauthorizedError");
-const NotFoundError = require("./customErrors/NotFoundError");
-const ForbiddenError = require("./customErrors/ForbiddenError");
+const BadRequestError = require("./errors/BadRequestError");
+const ConflictError = require("./errors/ConflictError");
+const UnauthorizedError = require("./errors/UnauthorizedError");
+const NotFoundError = require("./errors/NotFoundError");
+const ForbiddenError = require("./errors/ForbiddenError");
 
 module.exports = {
   STATUS_CODES,
