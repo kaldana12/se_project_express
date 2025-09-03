@@ -21,7 +21,7 @@ router.post("/", auth, validateCardBody, createItem);
 router.get("/", getItems);
 
 // Delete item by ID (validate :itemId param)
-router.delete("/:itemId", validateItemId, deleteItem);
+router.delete("/:itemId", auth, validateItemId, deleteItem);
 
 // Like item (validate :itemId param)
 router.put("/:itemId/likes", auth, validateItemId, likeItem);
