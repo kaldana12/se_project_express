@@ -55,13 +55,6 @@ app.get("/crash-test", () => {
   }, 0);
 });
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res
-    .status(err.statusCode || 500)
-    .json({ message: "An error occurred on the server" });
-});
-
 // start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
