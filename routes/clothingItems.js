@@ -21,12 +21,12 @@ router.post("/", auth, validateCardBody, createItem);
 router.get("/", getItems);
 
 // Delete item by ID (validate :itemId param)
-router.delete("/:id", auth, validateItemId, deleteItem);
+router.delete("/:itemId", validateItemId, deleteItem);
 
 // Like item (validate :itemId param)
-router.put("/:id/likes", auth, validateItemId, likeItem);
+router.put("/:itemId/likes", auth, validateItemId, likeItem);
 
 // Dislike item (validate :itemId param)
-router.delete("/:id/likes", auth, validateItemId, dislikeItem);
+router.delete("/:itemId/likes", auth, validateItemId, dislikeItem);
 
 module.exports = router;
