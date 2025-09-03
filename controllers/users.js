@@ -8,7 +8,7 @@ const {
   UnauthorizedError,
   NotFoundError,
   ConflictError,
-} = require("../utils/errors");
+} = require("../utils/errors/index");
 
 // POST /signup
 const createUser = (req, res, next) => {
@@ -41,7 +41,7 @@ const createUser = (req, res, next) => {
 const getUser = (req, res, next) => {
   const { userId } = req.params;
 
-  return User.findById(userId)
+  User.findById(userId)
     .orFail()
     .then((user) => res.status(STATUS_CODES.OK).send(user))
     .catch((err) => {
