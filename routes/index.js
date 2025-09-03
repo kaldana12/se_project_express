@@ -1,16 +1,10 @@
 const router = require("express").Router();
 const userRouter = require("./users");
 const clothingItem = require("./clothingItems");
-const {
-  login,
-  createUser,
-  getUsers,
-  getUser,
-} = require("../controllers/users");
+const { login, createUser } = require("../controllers/users");
 const {
   validateLogin,
   validateUserCreation,
-  validateId,
 } = require("../middlewares/validation");
 const auth = require("../middlewares/auth");
 const { NotFoundError } = require("../utils/errors");
@@ -18,11 +12,7 @@ const { NotFoundError } = require("../utils/errors");
 // Public routes
 router.post("/signin", validateLogin, login);
 router.post("/signup", validateUserCreation, createUser);
-router.post("/users", validateUserCreation, createUser);
 router.use("/items", clothingItem);
-
-router.get("/users", getUsers);
-router.get("/users/:userId", validateId, getUser);
 
 router.use(auth);
 
