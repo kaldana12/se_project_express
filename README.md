@@ -41,3 +41,4 @@ REST API principles — for clean and scalable architecture
 Frontend: https://wtwrkproject.jumpingcrab.com
 Backend: https://api.wtwrkproject.jumpingcrab.com
 Frontend GitHub repo: https://github.com/kaldana12/se_project_react.git
+deployed url: https://vernal-zone-469711-g5.uk.r.appspot.com
