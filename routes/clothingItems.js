@@ -27,6 +27,6 @@ router.delete("/:itemId", auth, validateItemId, deleteItem);
 router.put("/:itemId/likes", auth, validateItemId, likeItem);
 
 // Dislike item (validate :itemId param)
-router.delete("/:itemId/likes", auth, validateItemId, dislikeItem);
+//router.delete("/:itemId/likes", auth, validateItemId, dislikeItem);
 
 module.exports = router;
