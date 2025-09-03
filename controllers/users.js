@@ -5,10 +5,10 @@ const User = require("../models/user");
 const { STATUS_CODES, ERROR_MESSAGES } = require("../utils/errors");
 const {
   BadRequestError,
+  ConflictError,
   UnauthorizedError,
   NotFoundError,
-  ConflictError,
-} = require("../utils/errors/index");
+} = require("../utils/errors");
 
 // POST /signup
 const createUser = (req, res, next) => {
