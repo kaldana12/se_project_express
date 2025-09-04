@@ -20,13 +20,13 @@ router.post("/", auth, validateCardBody, createItem);
 // Get all items (no validation needed)
 router.get("/", getItems);
 
+// Delete item by ID (validate :itemId param)
+router.delete("/:itemId", auth, validateItemId, deleteItem);
+
 // Like item (validate :itemId param)
 router.put("/:itemId/likes", auth, validateItemId, likeItem);
 
 // Dislike item (validate :itemId param)
 router.delete("/:itemId/likes", auth, validateItemId, dislikeItem);
-
-// Delete item by ID (validate :itemId param)
-router.delete("/:itemId", auth, validateItemId, deleteItem);
 
 module.exports = router;
