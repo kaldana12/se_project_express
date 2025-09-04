@@ -14,7 +14,7 @@ const createItem = (req, res, next) => {
 const getItems = (req, res, next) => {
   ClothingItem.find({})
     .populate("owner")
-    .then((items) => res.status(STATUS_CODES.OK).send(items))
+    .then((items) => res.status(STATUS_CODES.OK).send({ data: items }))
     .catch(next);
 };
 
@@ -27,9 +27,10 @@ const deleteItem = (req, res, next) => {
       if (item.owner.toString() !== req.user._id) {
         throw new ForbiddenError(ERROR_MESSAGES.NO_PERMISSION);
       }
-      item.deleteOne().then(() => {
-        res.status(STATUS_CODES.OK).send({ message: "Item deleted" });
-      });
+      return item.deleteOne();
+    })
+    .then(() => {
+      res.status(STATUS_CODES.OK).send({ message: "Item deleted" });
     })
     .catch(next);
 };
@@ -44,7 +45,7 @@ const likeItem = (req, res, next) => {
       if (!item) {
         throw new NotFoundError(ERROR_MESSAGES.ITEM_NOT_FOUND);
       }
-      res.status(STATUS_CODES.OK).send(item);
+      res.status(STATUS_CODES.OK).send({ data: item });
     })
     .catch(next);
 };
@@ -59,7 +60,7 @@ const dislikeItem = (req, res, next) => {
       if (!item) {
         throw new NotFoundError(ERROR_MESSAGES.ITEM_NOT_FOUND);
       }
-      res.status(STATUS_CODES.OK).send(item);
+      res.status(STATUS_CODES.OK).send({ data: item });
     })
     .catch(next);
 };
