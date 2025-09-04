@@ -1,4 +1,4 @@
-const { celebrate, Joi, Segments } = require("celebrate");
+const { celebrate, Joi } = require("celebrate");
 const validator = require("validator");
 
 const validateURL = (value, helpers) => {
@@ -9,7 +9,7 @@ const validateURL = (value, helpers) => {
 };
 
 module.exports.validateCardBody = celebrate({
-  [Segments.BODY]: Joi.object().keys({
+  body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30).messages({
       "string.min": 'The minimum length of the "name" field is 2',
       "string.max": 'The maximum length of the "name" field is 30',
@@ -28,7 +28,7 @@ module.exports.validateCardBody = celebrate({
 });
 
 module.exports.validateUserCreation = celebrate({
-  [Segments.BODY]: Joi.object().keys({
+  body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required().messages({
       "string.min": 'The minimum length of the "name" field is 2',
       "string.max": 'The maximum length of the "name" field is 30',
@@ -50,20 +50,24 @@ module.exports.validateUserCreation = celebrate({
 });
 
 module.exports.validateLogin = celebrate({
-  [Segments.BODY]: Joi.object({
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
+  body: Joi.object({
+    email: Joi.string().email().required().messages({
+      "string.empty": 'The "email" field must be filled in',
+    }),
+    password: Joi.string().required().messages({
+      "string.empty": 'The "password" field must be filled in',
+    }),
   }),
 });
 
-module.exports.validateId = celebrate({
+module.exports.validateItemId = celebrate({
   params: Joi.object().keys({
     itemId: Joi.string().length(24).hex().required(),
   }),
 });
 
 module.exports.validateUserUpdate = celebrate({
-  [Segments.BODY]: Joi.object().keys({
+  body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required().messages({
       "string.min": 'The minimum length of the "name" field is 2',
       "string.max": 'The maximum length of the "name" field is 30',
