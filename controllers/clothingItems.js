@@ -27,7 +27,7 @@ const deleteItem = (req, res, next) => {
       if (item.owner.toString() !== req.user._id) {
         throw new ForbiddenError(ERROR_MESSAGES.NO_PERMISSION);
       }
-      return item.deleteOne().then(() => {
+      item.deleteOne().then(() => {
         res.status(STATUS_CODES.OK).send({ message: "Item deleted" });
       });
     })
