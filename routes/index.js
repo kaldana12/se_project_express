@@ -10,7 +10,7 @@ const auth = require("../middlewares/auth");
 const { NotFoundError } = require("../utils/errors/NotFoundError");
 
 // Public routes
-router.post("/signin", validateLogin, login);
+
 router.post("/users", validateUserCreation, createUser);
 router.use("/items", clothingItem);
 
