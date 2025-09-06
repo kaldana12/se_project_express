@@ -12,7 +12,6 @@ const {
 const auth = require("../middlewares/auth");
 
 router.get("/", getUsers);
-router.post("/", validateLogin, login);
 router.get("/me", auth, getCurrentUser);
 router.patch("/me", validateUserUpdate, updateUserProfile);
 
